@@ -1,5 +1,16 @@
 export type ErrorMessageMode = 'none' | 'modal' | 'message' | undefined;
 
+export interface AxiosInstance {
+  <T = any>(config: AxiosRequestConfig): Promise<T>;
+  request<T = any> (config: AxiosRequestConfig): Promise<T>;
+  get<T = any>(url: string, config?: AxiosRequestConfig): Promise<T>;
+  delete<T = any>(url: string, config?: AxiosRequestConfig): Promise<T>;
+  head<T = any>(url: string, config?: AxiosRequestConfig): Promise<T>;
+  post<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T>;
+  put<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T>;
+  patch<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T>;
+}
+
 export interface RequestOptions {
   // Splicing request parameters to url
   joinParamsToUrl?: boolean;
@@ -25,6 +36,8 @@ export interface RequestOptions {
   withToken?: boolean;
   // 请求重试机制
   retryRequest?: RetryRequest;
+  // 是否清空 空数据
+  clearNull?: boolean
 }
 
 export interface RetryRequest {
@@ -37,7 +50,13 @@ export interface Result<T = any> {
   code: number;
   type: 'success' | 'error' | 'warning';
   message: string;
-  result: T;
+  data: T;
+}
+
+export interface ResultList<T = any> {
+  totalCount: number;
+  totalPage: number;
+  list: T;
 }
 
 // multipart/form-data: upload file

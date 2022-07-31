@@ -1,20 +1,20 @@
 {
-  "compilerOptions": {
-    /** 基本配置 **/
+	"compilerOptions": {
+		/** 基本配置 **/
 		// 指定编译输出目标ECMAScript版本： "ES3"（默认）， "ES5"， "ES6"/ "ES2015"， "ES2016"， "ES2017"或 "ESNext"。
 		// "ESNext"最新的生成目标列表为 ES proposed features
-    "target": "ESNext",
+		"target": "ESNext",
 		// 指定采用的模块系统 module，"None"， "CommonJS"， "AMD"， "System"， "UMD"， "ES6"或 "ES2015"。 target === "ES6" ? "ES6" : "commonjs"
 		"module": "ESNext", // 指定生成哪个模块系统代码
 		// 以严格模式解析, 启用所有严格类型检查选项，启用 --strict相当于启用 --noImplicitAny, --noImplicitThis, --alwaysStrict， --strictNullChecks和 --strictFunctionTypes和--strictPropertyInitialization。
-		"strict": true, // 是否启用所有严格类型检查选项
+		"strict": false, // 是否启用所有严格类型检查选项
 		// 以严格模式解析并为每个源文件生成 "use strict"语句
 		// "alwaysStrict": true,
 		// "strictFunctionTypes": true, // 禁用函数参数双向协变检查
 		// 确保类的非undefined属性已经在构造函数里初始化。若要令此选项生效，需要同时启用--strictNullChecks。
 		// "strictPropertyInitialization": false,
 		// 在严格的 null检查模式下， null和 undefined值不包含在任何类型里，只允许用它们自己和 any来赋值（有个例外， undefined可以赋值到 void）
-		"strictNullChecks": true,
+		"strictNullChecks": false,
 		// 输入文件的字符集
 		"charset": "utf8",
 		// 显示错误信息时使用的语言，比如：en-us
@@ -33,7 +33,7 @@
 		/* 默认注入的库为：
      ► 对--target ES5：DOM，ES5，ScriptHost
      ► 对--target ES6：DOM，ES6，DOM.Iterable，ScriptHost */
-    "lib": ["DOM", "DOM.Iterable", "ESNext"], // 编译过程中需要引入的库文件的列表  "es5"
+		"lib": ["DOM", "DOM.Iterable", "ESNext"], // 编译过程中需要引入的库文件的列表  "es5"
 		/** 模块解析选项 **/
 		//module === "AMD" or "System" or "ES6" ? "Classic" : "Node"	决定如何处理模块。或者是"Node"对于Node.js/io.js，或者是"Classic"（默认）。
 		"moduleResolution": "Node", // 指定模块解析策略
@@ -41,13 +41,13 @@
 		// "importsNotUsedAsValues": "preserve",
 		// "incremental": true,
 		"resolveJsonModule": true, // 支持导入 json 模块
-    "useDefineForClassFields": true,
+		"useDefineForClassFields": true,
 		// 生成相应的 .map文件， 可用于 debug 的 sourceMap, 与inlineSourceMap二选一
 		"sourceMap": true,
 		// "inlineSourceMap": false, // 生成单个sourcemaps文件，而不是将每sourcemaps生成不同的文件。
 		// "inlineSources": false, // 将代码与sourcemaps生成到一个文件中，要求同时设置了 --inlineSourceMap或 --sourceMap属性
-    
-    // "sourceRoot": "./",	指定TypeScript源文件的路径，以便调试器定位。当TypeScript文件的位置是在运行时指定时使用此标记。路径信息会被加到 sourceMap里
+
+		// "sourceRoot": "./",	指定TypeScript源文件的路径，以便调试器定位。当TypeScript文件的位置是在运行时指定时使用此标记。路径信息会被加到 sourceMap里
 		// 为调试器指定指定sourcemap文件的路径，而不是使用生成时的路径。
 		// "mapRoot": "./", 当.map文件是在运行时指定的，并不同于 js文件的地址时使用这个标记。指定的路径会嵌入到 sourceMap里告诉调试器到哪里去找它们。
 		// 解析非相对模块名的基准目录，默认是当前目录
@@ -56,7 +56,7 @@
 		"typeRoots": ["./node_modules/@types", "./types"],
 		// 设置引入的类型声明文件名列表。 指定了types，只有被列出来的包才会被包含进来，指定"types": []来禁用自动引入@types包
 		// "types": [
-    // "vite-plugin-svgr/client",
+		// "vite-plugin-svgr/client",
 		//   "node",
 		//   "webpack-env",
 		//   "jest"
@@ -68,10 +68,10 @@
 			"@/*": ["src/*"],
 			"*": ["node_modules/*"],
 			// "/#/*": ["types/*"]
-      "types/*": ["types/*"]
+			"types/*": ["types/*"]
 		},
 		// 仅用来控制输出的目录结构 --outDir
-    "outDir": "build/dist", // 重定向输出目录
+		"outDir": "build/dist", // 重定向输出目录
 		// "outFile": "dist",  // 将输出文件合并为一个文件。合并的顺序是根据传入编译器的文件顺序和 ///<reference``>和 import的文件顺序决定的
 		"rootDir": "./", // "src", 根（root）文件夹列表，表示运行时组合工程结构的内容。
 		// 将多个目录放在一个虚拟目录下，用于运行时，即编译后引入文件的位置可能发生变化，这也设置可以虚拟src和out在同一个目录下，不用再去改变路径也不会报错
@@ -80,9 +80,9 @@
 		"declaration": true,
 		// 生成声明文件的输出路径
 		"declarationDir": "./types", // "./src"
-    // "plugins": [{ "name": "typescript-plugin-css-modules" }],
+		// "plugins": [{ "name": "typescript-plugin-css-modules" }],
 
-    /** 实验性选项 **/
+		/** 实验性选项 **/
 		"experimentalDecorators": true, // 启用实验性的ES装饰器
 		"emitDecoratorMetadata": true, // 给源码里的装饰器声明加上设计类型元数据
 		/** 其他选项 **/
@@ -130,18 +130,18 @@
 		"traceResolution": false, // 生成模块解析日志信息
 		"version": true // 打印编译器版本号
 		// watch		在监视模式下运行编译器。会监视输出文件，在它们改变时重新编译。监视文件和目录的具体实现可以通过环境变量进行配置。
-  },
-  // "include"和"exclude"属性指定一个文件glob匹配模式列表。 支持的glob通配符有：*、**/ 、?。 使用"include"引入的文件可以使用"exclude"属性过滤。
-  "include": [
-    // "./src",
+	},
+	// "include"和"exclude"属性指定一个文件glob匹配模式列表。 支持的glob通配符有：*、**/ 、?。 使用"include"引入的文件可以使用"exclude"属性过滤。
+	"include": [
+		// "./src",
 		"src/**/*.ts",
 		"src/**/*.tsx",
-    "src/**/*.d.ts",
+		"src/**/*.d.ts",
 		// "./tests",
-    // "./types"
+		// "./types"
 		"types/**/*.d.ts"
 	],
-  // ts 排除的文件,  "exclude"默认情况下会排除node_modules，bower_components，jspm_packages和<outDir>目录
+	// ts 排除的文件,  "exclude"默认情况下会排除node_modules，bower_components，jspm_packages和<outDir>目录
 	"exclude": [
 		"node_modules",
 		"dist",
@@ -153,6 +153,6 @@
 	],
 	// "files"指定一个包含相对或绝对文件路径的列表。通过 "files"属性明确指定的文件却总是会被包含在内，不管"exclude"如何设置。
 	"files": ["types/index.d.ts", "types/global.d.ts", "types/axios.d.ts", "types/env.d.ts"], // "src/shims-tsx.d.ts",
-  // 指定工程引用依赖
-  "references": [{ "path": "./tsconfig.node.json" }]
+	// 指定工程引用依赖
+	"references": [{ "path": "./tsconfig.node.json" }]
 }
