@@ -1,7 +1,7 @@
 import Axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import qs from 'qs';
-import CookieStorage from '@/utils/cookiestorage';
 import { message } from 'antd';
+import CookieStorage from '@/utils/storagecookies';
 import { StreamPost, StreamGet, convertRes2Blob } from '@/apis/upDownloadFile';
 
 // import $store from '@/store/index';
@@ -17,10 +17,21 @@ interface CustomRequestConfig extends AxiosRequestConfig {
 const envconf = require('@/envconfig');
 const isProd = ['production', 'test', 'uat'].includes(process.env.NODE_ENV as any);
 
+/* 是否请求正在刷新token */
+let isRefreshToken = false;
 // 是否开启请求锁。
 let fetchLock = true;
 // 是否静态提示信息
 let $quietMsg = false;
+
+function updatedTime() {
+  let r = getRefresh();
+  if (!r || !r.expires_in) return false;
+  let currentTime = Date.parse(new Date()) / 1000;
+  let expiresTime = r.expires_in;
+  // 60秒后即将过期
+  return expiresTime - currentTime <= 60
+}
 
 // 创建axios实例
 const configAxios: AxiosRequestConfig = {
@@ -221,6 +232,36 @@ const InterceptorsRequest = {
 			getToken && (config.headers.Authorization = `${getToken}`);
 			Reflect.deleteProperty(config, 'usetoken');
 		}
+
+    if (updatedTime() && !isRefreshToken) {
+        isRefreshToken = true;
+        let refreshData = getRefresh();
+        if (!refreshData) return;
+        const { client_id, client_secret, refresh_token} = refreshData
+        getTokens(refreshData).then((data) => {
+          isRefreshToken = false;
+          let rData = {
+            client_id,
+            client_secret,
+            refresh_token,
+            expires_time: (Date.parse(new Date()) / 1000 + data.expires_in),
+          }
+          // 存储token，存进cookie里面
+          // store.commit('setTokenInfo', data.token_type + data.access_token);
+          // 存储refresh_token
+          // store.commit('setRefreshToken', rData);
+          // onRrefreshed(data.token_type + data.access_token);
+          /* 执行onRefreshed函数后清空数组中保存的请求 */
+          // refreshSubscribers = [];
+        }).catch(err => {
+          console.log(err);
+          // router.replace({
+          //   path: '/login'
+          // })
+        })
+    } else {
+      return config
+    }
 		// 处理请求之前的配置
 		console.log('interceptors_config:', config);
 		return config;
@@ -300,10 +341,6 @@ InstanceAxios.interceptors.request.use(InterceptorsRequest.config, InterceptorsR
 InstanceAxios.interceptors.response.use(InterceptorsResponse.response, InterceptorsResponse.error);
 
 export default function Fetch(options) {
-	//自定义配置
-	let extraOptions = {
-		$quiet: options.$quiet || false, //默认弹出message提示
-	};
 
 	return InstanceAxios(options)
 		.then(response => {

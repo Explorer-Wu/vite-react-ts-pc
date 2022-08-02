@@ -6,7 +6,8 @@
 		"target": "ESNext",
 		// 指定采用的模块系统 module，"None"， "CommonJS"， "AMD"， "System"， "UMD"， "ES6"或 "ES2015"。 target === "ES6" ? "ES6" : "commonjs"
 		"module": "ESNext", // 指定生成哪个模块系统代码
-		// 以严格模式解析, 启用所有严格类型检查选项，启用 --strict相当于启用 --noImplicitAny, --noImplicitThis, --alwaysStrict， --strictNullChecks和 --strictFunctionTypes和--strictPropertyInitialization。
+		/** 以严格模式解析, 启用所有严格类型检查选项，启用 --strict相当于启用 
+    --noImplicitAny, --noImplicitThis, --alwaysStrict， --strictNullChecks和 --strictFunctionTypes和--strictPropertyInitialization。*/
 		"strict": false, // 是否启用所有严格类型检查选项
 		// 以严格模式解析并为每个源文件生成 "use strict"语句
 		// "alwaysStrict": true,
@@ -15,6 +16,10 @@
 		// "strictPropertyInitialization": false,
 		// 在严格的 null检查模式下， null和 undefined值不包含在任何类型里，只允许用它们自己和 any来赋值（有个例外， undefined可以赋值到 void）
 		"strictNullChecks": false,
+    "strictBindCallApply": true,  /* Enable strict 'bind', 'call', and 'apply' methods on functions. */
+		"noImplicitThis": false, // 忽略 this/any 的类型检查（当 this表达式的值为 any类型的时候，生成一个错误）
+		"noImplicitAny": false, // 在表达式和声明上有隐含的 any类型时报错 
+
 		// 输入文件的字符集
 		"charset": "utf8",
 		// 显示错误信息时使用的语言，比如：en-us
@@ -34,6 +39,17 @@
      ► 对--target ES5：DOM，ES5，ScriptHost
      ► 对--target ES6：DOM，ES6，DOM.Iterable，ScriptHost */
 		"lib": ["DOM", "DOM.Iterable", "ESNext"], // 编译过程中需要引入的库文件的列表  "es5"
+
+    /* Source Map 相关配置项 */
+    // 生成相应的 .map文件， 可用于 debug 的 sourceMap, 与inlineSourceMap二选一
+		"sourceMap": true,
+		// "inlineSourceMap": false, // 生成单个sourcemaps文件，而不是将每sourcemaps生成不同的文件。
+		// "inlineSources": false, // 将代码与sourcemaps生成到一个文件中，要求同时设置了 --inlineSourceMap或 --sourceMap属性
+		// "sourceRoot": "./",	指定TypeScript源文件的路径，以便调试器定位。当TypeScript文件的位置是在运行时指定时使用此标记。路径信息会被加到 sourceMap里
+		// 为调试器指定指定sourcemap文件的路径，而不是使用生成时的路径。
+		// "mapRoot": "./", 当.map文件是在运行时指定的，并不同于 js文件的地址时使用这个标记。指定的路径会嵌入到 sourceMap里告诉调试器到哪里去找它们。
+		// 解析非相对模块名的基准目录，默认是当前目录
+
 		/** 模块解析选项 **/
 		//module === "AMD" or "System" or "ES6" ? "Classic" : "Node"	决定如何处理模块。或者是"Node"对于Node.js/io.js，或者是"Classic"（默认）。
 		"moduleResolution": "Node", // 指定模块解析策略
@@ -42,15 +58,9 @@
 		// "incremental": true,
 		"resolveJsonModule": true, // 支持导入 json 模块
 		"useDefineForClassFields": true,
-		// 生成相应的 .map文件， 可用于 debug 的 sourceMap, 与inlineSourceMap二选一
-		"sourceMap": true,
-		// "inlineSourceMap": false, // 生成单个sourcemaps文件，而不是将每sourcemaps生成不同的文件。
-		// "inlineSources": false, // 将代码与sourcemaps生成到一个文件中，要求同时设置了 --inlineSourceMap或 --sourceMap属性
-
-		// "sourceRoot": "./",	指定TypeScript源文件的路径，以便调试器定位。当TypeScript文件的位置是在运行时指定时使用此标记。路径信息会被加到 sourceMap里
-		// 为调试器指定指定sourcemap文件的路径，而不是使用生成时的路径。
-		// "mapRoot": "./", 当.map文件是在运行时指定的，并不同于 js文件的地址时使用这个标记。指定的路径会嵌入到 sourceMap里告诉调试器到哪里去找它们。
-		// 解析非相对模块名的基准目录，默认是当前目录
+    "preserveSymlinks": false, // 不把符号链接解析为其真实路径；将符号链接文件视为真正的文件
+    // 允许从没有设置默认导出的模块中默认导入。这并不影响代码的输出，仅为了类型检查。
+		"allowSyntheticDefaultImports": true, // module === "system" 或 设置了esModuleInterop 且 module 不为 es2015 / esnext
 		"baseUrl": "./", // 根路径
 		// 默认所有可见的"@types"包会在编译过程中被包含进来， 而typeRoots指定要包含的类型声明文件路径列表（仅以下路径的包），
 		"typeRoots": ["./node_modules/@types", "./types"],
@@ -85,6 +95,7 @@
 		/** 实验性选项 **/
 		"experimentalDecorators": true, // 启用实验性的ES装饰器
 		"emitDecoratorMetadata": true, // 给源码里的装饰器声明加上设计类型元数据
+    
 		/** 其他选项 **/
 		"forceConsistentCasingInFileNames": true, // 禁止对同一个文件的不一致的引用。
 		"listEmittedFiles": true, // 打印输出文件名字
@@ -93,8 +104,6 @@
 		"noEmitOnError": false, // 报错时不生成输出文件
 		"noErrorTruncation": false, // 不截短错误消息
 		"skipLibCheck": true, // 忽略所有的声明文件（ *.d.ts）的类型检查, 在上游仓库修复好之前暂时缓解错误
-		// 允许从没有设置默认导出的模块中默认导入。这并不影响代码的输出，仅为了类型检查。
-		"allowSyntheticDefaultImports": true, // module === "system" 或 设置了esModuleInterop 且 module 不为 es2015 / esnext
 		"noEmit": true, // 只想使用tsc的类型检查作为函数时（当其他工具（例如Babel实际编译）时）使用它
 		// "noEmit": false,	//	不生成输出文件。
 		"importHelpers": true, // 从tslib导入辅助工具函数（比如 __extends， __rest等）
@@ -108,19 +117,16 @@
 		"extendedDiagnostics": false, // 显示详细的诊段信息
 		"disableSizeLimit": false, //	禁用JavaScript工程体积大小的限制
 		"emitBOM": false, // 在输出文件的开头加入BOM头（UTF-8 Byte Order Mark）
-		// 忽略 this/any 的类型检查（当 this表达式的值为 any类型的时候，生成一个错误）
-		"noImplicitThis": false,
-		"noImplicitAny": false, // 在表达式和声明上有隐含的 any类型时报错
-		"noFallthroughCasesInSwitch": true, // 报告switch语句的fallthrough错误。（即，不允许switch的case语句贯穿）
-		"noImplicitReturns": true, // 不是函数的所有返回路径都有返回值时报错。
+		
 		"noImplicitUseStrict": false, // 模块输出中不包含"use strict"指令
 		"noLib": false, // 不包含默认的库文件（ lib.d.ts）
 		"noResolve": false, // 不把 /// <reference``>或模块导入的文件加到编译文件列表。
 		"noStrictGenericChecks": false, // 禁用在函数类型里对泛型签名进行严格检查。
 		"noUnusedLocals": true, // 若有未使用的局部变量则抛错
 		"noUnusedParameters": false, // 若有未使用的参数则抛错
+    "noFallthroughCasesInSwitch": true, // 报告switch语句的fallthrough错误。（即，不允许switch的case语句贯穿）
+		"noImplicitReturns": true, // 不是函数的所有返回路径都有返回值时报错。
 		"preserveConstEnums": true, // 保留 const和 enum声明
-		"preserveSymlinks": false, // 不把符号链接解析为其真实路径；将符号链接文件视为真正的文件
 		"preserveWatchOutput": false, // 保留watch模式下过时的控制台输出
 		"skipDefaultLibCheck": false, // 忽略库的默认声明文件的类型检查
 		"removeComments": true, // 删除所有注释，除了以 /!*开头的版权信息
