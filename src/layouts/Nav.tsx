@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, matchRoutes, useParams } from 'react-router-dom';
-import HistoryRule from '@/router/history';
+import HistoryRule, { HrefTo, LinkTo, LinkNav } from '@/router/history';
 import { routes } from '@/router/index';
 
 import _ from 'lodash';
@@ -92,11 +92,11 @@ const NavMenu: React.FC<any> = (props: any, context?: any) => {
 
 	// const menuLinks: any[] = mapPathFn(MenusList);
 
-	const linkTo = link => {
-		console.log('linkTo:', link.key, props);
-		// history.replace(link.key);
-		HistoryNav(link.key, { replace: true });
-	};
+	// const linkTo = link => {
+	// 	console.log('linkTo:', link.key, props);
+	// 	// history.replace(link.key);
+	// 	HistoryNav(link.key, { replace: true });
+	// };
 
 	useEffect(() => {
 		const routeArrs = matchRoutes(routes, Location.pathname); // 返回匹配到的路由数组对象，每一个对象都是一个路由对象
@@ -132,7 +132,7 @@ const NavMenu: React.FC<any> = (props: any, context?: any) => {
 				defaultSelectedKeys={['/views/home']}
 				selectedKeys={selKeys}
 				items={MenusList}
-				onClick={linkTo}
+				onClick={link => HrefTo(link.key)}
 			/>
 			{/*  defaultOpenKeys={defaultOpenKeys}
       </Menu> */}

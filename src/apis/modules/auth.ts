@@ -1,4 +1,6 @@
-const ApiAuth = [
+import asyncApi, { type ApiFn } from '../api';
+
+const ApiAuthOpts = [
 	{
 		name: 'login', // 登录
 		url: '/auth/login',
@@ -9,6 +11,13 @@ const ApiAuth = [
 		url: '/auth/logout',
 		method: 'post',
 	},
+	{
+		name: 'refreshToken', // 更新token
+		url: '/auth/refreshToken',
+		method: 'post',
+	},
 ];
 
-export default ApiAuth;
+const ApisAuth: ApiFn = asyncApi(ApiAuthOpts);
+
+export default ApisAuth;

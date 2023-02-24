@@ -1,39 +1,51 @@
-import Axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import Axios, {
+	type AxiosInstance,
+	type AxiosRequestConfig,
+	type AxiosResponse,
+	type AxiosError,
+} from 'axios';
 import qs from 'qs';
 import { message } from 'antd';
-import CookieStorage from '@/utils/storagecookies';
+import React, { useReducer, type Dispatch, type PropsWithChildren } from 'react';
+import { LinkTo, HrefTo } from '@/router/history';
+// import CookieStorage from '@/utils/storagecookies';
+import { getUserToken, formatToken, setToken, removeToken } from '@/utils/auth';
 import { StreamPost, StreamGet, convertRes2Blob } from '@/apis/upDownloadFile';
+import { authInitState, authReducer } from '@/storehooks/reducers/auth';
 
-// import $store from '@/store/index';
+// const { getCookie, setCookie, delCookie, getSession, setSession, delSession, clearSession } =
+// 	CookieStorage;
 
-interface CustomRequestConfig extends AxiosRequestConfig {
+const [authState, authDispatch] = useReducer(authReducer, authInitState);
+
+// interface CustomAxiosInstance extends AxiosInstance {
+// 	setToken: (token: string) => void;
+// }
+interface CustomRequestConfig<D = any> extends AxiosRequestConfig {
 	usetoken?: boolean;
 	// isFormdata: boolean;
-	fetchLock: boolean;
+	fetchLock?: boolean;
 	quiet?: boolean;
-	readType: string;
+	readType?: string;
+}
+interface CustomAxiosResponse<T = any, D = any> extends AxiosResponse {
+	// data: T;
+	// status: number;
+	// statusText: string;
+	config: CustomRequestConfig<D>;
 }
 
 const envconf = require('@/envconfig');
 const isProd = ['production', 'test', 'uat'].includes(process.env.NODE_ENV as any);
 
-/* 是否请求正在刷新token */
+/* 是否正在刷新请求token */
 let isRefreshToken = false;
 // 是否开启请求锁。
 let fetchLock = true;
 // 是否静态提示信息
 let $quietMsg = false;
 
-function updatedTime() {
-  let r = getRefresh();
-  if (!r || !r.expires_in) return false;
-  let currentTime = Date.parse(new Date()) / 1000;
-  let expiresTime = r.expires_in;
-  // 60秒后即将过期
-  return expiresTime - currentTime <= 60
-}
-
-// 创建axios实例
+// axios实例配置
 const configAxios: AxiosRequestConfig = {
 	baseURL: isProd ? envconf.baseUrl : process.env.BASE_URL,
 	// 是否跨域携带cookie
@@ -49,6 +61,9 @@ const configAxios: AxiosRequestConfig = {
 		'Cache-Control': 'no-cache', // 'max-age=86400, must-revalidate' // “再次校验”
 		// Expires: 0,
 		'accept-language': 'zh-cn,zh',
+		// Accept: 'application/json, text/plain, */*',
+		// 'Content-Type': 'application/json',
+		'X-Requested-With': 'XMLHttpRequest',
 	},
 	transformRequest: [
 		(data: any, headers: any): any => {
@@ -63,58 +78,22 @@ const configAxios: AxiosRequestConfig = {
 		},
 	],
 };
+
+// 创建axios实例
 const InstanceAxios: AxiosInstance = Axios.create(configAxios);
+// const InstanceAxios: CustomAxiosInstance = {
+// 	...OrgInstanceAxios,
+// 	setToken: (token: string) => {
+// 		InstanceAxios.defaults.headers.common.Authorization = token; // defaults.headers['X-Token']
+// 		CookieStorage.setSession('user_token', token);
+// 	}
+// }
 
-// 错误状态信息
-const errStatusInfo = {
-	400: '错误请求',
-	401: '未授权，请重新登录',
-	403: '拒绝访问',
-	404: '请求错误，未找到资源',
-	408: '请求超时',
-	500: '服务端出错',
-	502: '网络错误',
-	503: '服务不可用',
-	504: '网络超时',
-	505: 'http版本不支持该请求',
-};
-
-const handleErrorFn = (error, status) => {
-	let errMsg = errStatusInfo[status] || `服务连接错误${status}`;
-	if (error.response) {
-		// const ErrRes = error.response  data
-		!isProd && console.log('interceptors.err:', error.response, error.config);
-		switch (status) {
-			case 401:
-				// 返回 401 清除过期token信息并跳转到登录页
-				// if ($store.state.auth.authenticated) {
-				// 	CookieStorage.clearCookie('user_token');
-				// 	console.log('access_del:', CookieStorage.getTokenCookie('user_token'));
-				// 	$store.dispatch('auth/check');
-				// }
-				// errMsg = '用户没有权限访问，或权限被占用，请登录账户！';
-				// error.response.msg = errMsg;
-				break;
-			case 403:
-				// if ($store.state.auth.authenticated) {
-				// 	$store.dispatch('auth/update');
-				// }
-				break;
-			default:
-				error.message = errMsg;
-				break;
-		}
-	}
-};
-
-const handleErrMessage = (msg, traceId = '') => {
-	const [messageApi] = message.useMessage();
-	messageApi.open({
-		type: 'error',
-		content: `${msg}${traceId}` || '系统错误，稍后再试',
-		duration: 5,
-	});
-};
+// 给实例添加一个setToken方法，用于登录后将最新token动态添加到header，同时将token保存在localStorage中
+function getRefreshToken() {
+	// instance是当前request.js中已创建的axios实例
+	return InstanceAxios.post('/refreshtoken').then(res => res.data);
+}
 
 interface ApiCacheType {
 	cachMap: Map<any, any>;
@@ -128,8 +107,10 @@ interface ApiCacheType {
 }
 
 const ApiCache: ApiCacheType = {
-	cachMap: new Map() /** 缓存列表 */,
-	fetchQueue: [] /** 请求任务队列 */,
+	/** 缓存列表 */
+	cachMap: new Map(),
+	/** 请求任务队列 */
+	fetchQueue: [],
 	/** 新增任务 */
 	addTask(config, cancelToken) {
 		this.fetchQueue.push({ original: `${config.url}&${config.method}`, cancelToken });
@@ -207,6 +188,67 @@ const ApiCache: ApiCacheType = {
 	},
 };
 
+// 错误状态信息
+const errStatusInfo = {
+	400: '错误请求',
+	401: '未授权，请重新登录',
+	403: '拒绝访问',
+	404: '请求出错，未找到资源',
+	408: '请求超时',
+	500: '服务端出错',
+	501: '服务未实现',
+	502: '网络错误',
+	503: '服务不可用',
+	504: '网络超时',
+	505: 'http版本不支持该请求',
+};
+
+const doneErrStatusMap = new Map([
+	[
+		401,
+		response => {
+			if (response.headers.authorization) {
+				// $store.state.auth.authenticated
+				// delSession('user_token');
+				removeToken();
+			}
+			// 返回 401 清除过期token信息并跳转到登录页
+			HrefTo('/auth/login');
+		},
+	],
+	[
+		403,
+		response => {
+			if (response.headers.authorization) {
+				// $store.state.auth.authenticated
+				// delSession('user_token');
+				getRefreshToken();
+				// $store.dispatch('auth/update');
+			}
+		},
+	],
+]);
+
+const handleErrorFn = (error, status) => {
+	let errMsg = errStatusInfo[status] || `服务连接出错${status}`;
+	if (error.response) {
+		// const ErrRes = error.response  data
+		!isProd && console.log('interceptors.err:', error.response, error.config);
+		// error.response.msg = errMsg + '，请检查网络或联系管理员！';
+		doneErrStatusMap.get(status)!(error.response);
+	}
+	error.message = errMsg + '，请检查网络或联系管理员！';
+};
+
+const handleErrMessage = (msg, traceId = '') => {
+	const [messageApi] = message.useMessage();
+	messageApi.open({
+		type: 'error',
+		content: `${msg}${traceId}` || '系统错误，稍后再试',
+		duration: 5,
+	});
+};
+
 // 请求拦截配置
 const InterceptorsRequest = {
 	config: <T extends CustomRequestConfig>(
@@ -223,45 +265,18 @@ const InterceptorsRequest = {
 				ApiCache.addTask(config, c);
 				ApiCache.addCach(config, c);
 			});
-			config.headers.expirationTime = void 0;
+			// config.headers && (config.headers.expirationTime = void 0);
 		}
 
 		// 判断是否需要token，如果存在的话，则每个http header都加上token
 		if (config.usetoken) {
-			let getToken = CookieStorage.getTokenCookie('user_token'); // localStorage.getItem('user_token');
-			getToken && (config.headers.Authorization = `${getToken}`);
+			let getTokenKey = getUserToken(); // localStorage.getItem('user_token');
+			getTokenKey.accessToken &&
+				config.headers &&
+				(config.headers.Authorization = formatToken(getTokenKey.accessToken));
 			Reflect.deleteProperty(config, 'usetoken');
 		}
 
-    if (updatedTime() && !isRefreshToken) {
-        isRefreshToken = true;
-        let refreshData = getRefresh();
-        if (!refreshData) return;
-        const { client_id, client_secret, refresh_token} = refreshData
-        getTokens(refreshData).then((data) => {
-          isRefreshToken = false;
-          let rData = {
-            client_id,
-            client_secret,
-            refresh_token,
-            expires_time: (Date.parse(new Date()) / 1000 + data.expires_in),
-          }
-          // 存储token，存进cookie里面
-          // store.commit('setTokenInfo', data.token_type + data.access_token);
-          // 存储refresh_token
-          // store.commit('setRefreshToken', rData);
-          // onRrefreshed(data.token_type + data.access_token);
-          /* 执行onRefreshed函数后清空数组中保存的请求 */
-          // refreshSubscribers = [];
-        }).catch(err => {
-          console.log(err);
-          // router.replace({
-          //   path: '/login'
-          // })
-        })
-    } else {
-      return config
-    }
 		// 处理请求之前的配置
 		console.log('interceptors_config:', config);
 		return config;
@@ -272,9 +287,10 @@ const InterceptorsRequest = {
 		return Promise.reject(err);
 	},
 };
+
 // 响应拦截配置
 const InterceptorsResponse = {
-	response: (response: AxiosResponse) => {
+	response: (response: CustomAxiosResponse) => {
 		const { status, headers, config, data } = response || {};
 		// responseLock(response.config);
 		if (fetchLock) {
@@ -298,6 +314,47 @@ const InterceptorsResponse = {
 			return false;
 		}
 
+		// 后端约定当4013时表示token过期了，要求刷新token
+		if (data.code === 4013) {
+			if (!isRefreshToken) {
+				isRefreshToken = true;
+				return getRefreshToken()
+					.then(res => {
+						const { user_token, refresh_key, expires } = res.data;
+						setToken({
+							accessToken: user_token,
+							refreshKey: refresh_key,
+							expires,
+						});
+						// 已经刷新了token，将所有队列中的请求进行重试
+						// requests.forEach(cb => cb(token));
+						ApiCache.updateCach(response);
+						return InstanceAxios(config);
+					})
+					.catch(res => {
+						console.error('refreshtoken error =>', res);
+						window.location.href = '/';
+					})
+					.finally(() => {
+						isRefreshToken = false;
+					});
+
+				// $store.dispatch('auth/update');
+			} else {
+				// 正在刷新token，将返回一个未执行resolve的promise
+				return new Promise(resolve => {
+					// 将resolve放进队列，用一个函数形式来保存，等token刷新后直接执行
+					// requests.push(token => {
+					// 	config.baseURL = '';
+					// 	config.headers['X-Token'] = token;
+					// 	resolve(InstanceAxios(config));
+					// });
+					ApiCache.updateCach(response);
+					resolve(InstanceAxios(config));
+				});
+			}
+		}
+
 		if (status && status !== 200) {
 			// 追踪错误信息
 			!$quietMsg && handleErrMessage(data.message, data.traceId);
@@ -317,7 +374,6 @@ const InterceptorsResponse = {
 
 		console.log('interceptors-err:', error);
 		if (Axios.isCancel(error)) {
-			console.log('取消上一个请求');
 			// 中断promise链接
 			return new Promise(() => null);
 		}
@@ -340,8 +396,7 @@ InstanceAxios.interceptors.request.use(InterceptorsRequest.config, InterceptorsR
 // 设置响应拦截器
 InstanceAxios.interceptors.response.use(InterceptorsResponse.response, InterceptorsResponse.error);
 
-export default function Fetch(options) {
-
+export default function Fetch(options: CustomRequestConfig) {
 	return InstanceAxios(options)
 		.then(response => {
 			const { status, data } = response;
