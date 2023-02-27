@@ -41,8 +41,8 @@ type ReqOpts = {
 const envconf = require('@/envconfig');
 const isProd = ['production', 'test', 'uat'].includes(process.env.NODE_ENV as any);
 
-const [state, dispatch] = useReducer(authReducer, authInitState as never);
-const authMiddleDispatch = dispatchAuthMiddleware(dispatch);
+// const [authState, authDispatch] = useReducer(authReducer, authInitState);
+// const authMiddleDispatch = dispatchAuthMiddleware(authDispatch);
 
 // 是否开启请求锁。
 let fetchLock = true;
@@ -107,35 +107,37 @@ const doneErrStatusMap = http =>
 			response => {
 				if (response.headers.authorization) {
 					const { config } = response;
-					return new Promise(resolve => {
-						if (!http.isRefreshToken) {
-							http.isRefreshToken = true;
+					// return new Promise(resolve => {
+					// 	if (!http.isRefreshToken) {
+					// 		http.isRefreshToken = true;
 
-							// try {
-							authMiddleDispatch({
-								type: AuthActionType.AuthUpdate,
-								payload: {
-									authed: true,
-								},
-							});
+					// 		try {
+					// 			authMiddleDispatch({
+					// 				type: AuthActionType.AuthUpdate,
+					// 				payload: {
+					// 					authed: true,
+					// 				},
+					// 			});
 
-							// 已经刷新了token，将所有队列中的请求进行重试
-							http.requests.forEach(cb => cb(getUserToken().accessToken));
-							http.requests = [];
+					// 			const { token } = authState;
 
-							// 重试当前请求并返回promise
-							resolve(http.retryOrigRequest(config) as any);
-							// } catch(err) {
-							// 	console.error('refreshtoken error =>', err);
-							// 	// window.location.href = '/';
-							// 	// 返回 401 清除过期token信息并跳转到登录页
-							// 	HrefTo('/auth/login');
-							// }
+					// 			// 已经刷新了token，将所有队列中的请求进行重试
+					// 			http.requests.forEach(cb => cb(token)); // getUserToken().accessToken)
+					// 			http.requests = [];
 
-							http.isRefreshToken = false;
-						}
-						resolve(http.axiosInstance(config) as any);
-					});
+					// 			// 重试当前请求并返回promise
+					// 			resolve(http.retryOrigRequest(config) as any);
+					// 		} catch (err) {
+					// 			console.error('refreshtoken error =>', err);
+					// 			// window.location.href = '/';
+					// 			// 返回 401 清除过期token信息并跳转到登录页
+					// 			HrefTo('/auth/login');
+					// 		}
+
+					// 		http.isRefreshToken = false;
+					// 	}
+					// 	resolve(http.axiosInstance(config) as any);
+					// });
 				}
 
 				// 返回 401 清除过期token信息并跳转到登录页

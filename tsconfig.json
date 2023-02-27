@@ -26,7 +26,7 @@
 		// "locale": "cn-zh",
 		// --project 编译指定目录下的项目。这个目录应该包含一个 tsconfig.json文件来管理编译。
 		// --reactNamespace	string	"React"	当目标为生成 "react" JSX时，指定 createElement和 __spread的调用对象
-		"allowJs": true, // 允许编译javascript文件
+		"allowJs": true, // 允许编译器编译JS，JSX文件
 		// "maxNodeModuleJsDepth": 0, // node_modules依赖的最大搜索深度并加载JavaScript文件。仅适用于 --allowJs
 		"allowUnreachableCode": false, // 不报告执行不到的代码错误
 		"allowUnusedLabels": false, // 不报告未使用的标签错误。
@@ -34,11 +34,12 @@
 		"checkJs": false,
 		"jsx": "react-jsx", // 在.tsx文件里支持JSX "React"或"Preserve",
 		// "jsxFactory": "h", // JSX时，使用的JSX工厂函数，比如 React.createElement或 h
+
 		// 编译过程中需要引入的库文件的列表。注意：如果--lib没有指定默认注入的库的列表。
 		/* 默认注入的库为：
      ► 对--target ES5：DOM，ES5，ScriptHost
      ► 对--target ES6：DOM，ES6，DOM.Iterable，ScriptHost */
-		"lib": ["DOM", "DOM.Iterable", "ESNext"], // 编译过程中需要引入的库文件的列表  "es5"
+		"lib": ["DOM", "DOM.Iterable", "ESNext", "ScriptHost"], // 编译过程中需要引入的库文件的列表  "es5"
 
 		/* Source Map 相关配置项 */
 		// 生成相应的 .map文件， 可用于 debug 的 sourceMap, 与inlineSourceMap二选一
@@ -52,8 +53,8 @@
 
 		/** 模块解析选项 **/
 		//module === "AMD" or "System" or "ES6" ? "Classic" : "Node"	决定如何处理模块。或者是"Node"对于Node.js/io.js，或者是"Classic"（默认）。
-		"moduleResolution": "Node", // 指定模块解析策略
-		"esModuleInterop": false, // 支持 CommonJS 和 ES 模块之间的互操作性
+		"moduleResolution": "Node", // 指定模块解析策略, 'node' 用于 Node.js 的 CommonJS 实现
+		"esModuleInterop": true, // 支持 CommonJS 和 ES 模块之间的互操作性,  CommonJS/AMD/UMD 模块导入兼容
 		// "importsNotUsedAsValues": "preserve",
 		// "incremental": true,
 		"resolveJsonModule": true, // 支持导入 json 模块
@@ -61,17 +62,13 @@
 		"preserveSymlinks": false, // 不把符号链接解析为其真实路径；将符号链接文件视为真正的文件
 		// 允许从没有设置默认导出的模块中默认导入。这并不影响代码的输出，仅为了类型检查。
 		"allowSyntheticDefaultImports": true, // module === "system" 或 设置了esModuleInterop 且 module 不为 es2015 / esnext
-		"baseUrl": "./", // 根路径
+		"baseUrl": "./", // 根路径, 非绝对地址的模块会基于这个目录去解析，默认值是当前目录
 		// 默认所有可见的"@types"包会在编译过程中被包含进来， 而typeRoots指定要包含的类型声明文件路径列表（仅以下路径的包），
 		"typeRoots": ["./node_modules/@types", "./types"],
 		// 设置引入的类型声明文件名列表。 指定了types，只有被列出来的包才会被包含进来，指定"types": []来禁用自动引入@types包
-		// "types": [
-		// "vite-plugin-svgr/client",
-		//   "node",
-		//   "webpack-env",
-		//   "jest"
-		// ],
-		// 模块名到基于 baseUrl的路径映射的列表（指定特殊模块的路径）
+		// 如不设置此项，默认会加载全部能找到的 node_modules/@types/xxx 包
+		"types": ["vite-plugin-svgr/client", "vite/client", "node"], // , "jest"
+		// 配置具体如何解析 require/import 的导入，模块名到基于 baseUrl的路径映射的列表（指定特殊模块的路径）
 		"paths": {
 			// 路径映射，与 baseUrl 关联
 			// 如使用jq时不想使用默认版本，而需要手动指定版本，可进行如下配置
@@ -103,10 +100,10 @@
 		"noEmitHelpers": false, // 不在输出文件中生成用户自定义的帮助函数代码，如 __extends。
 		"noEmitOnError": false, // 报错时不生成输出文件
 		"noErrorTruncation": false, // 不截短错误消息
-		"skipLibCheck": true, // 忽略所有的声明文件（ *.d.ts）的类型检查, 在上游仓库修复好之前暂时缓解错误
+		"skipLibCheck": true, // 忽略所有的声明文件（ *.d.ts）的类型检查 (跳过库声明文件的类型检查), 在上游仓库修复好之前暂时缓解错误
 		"noEmit": true, // 只想使用tsc的类型检查作为函数时（当其他工具（例如Babel实际编译）时）使用它
 		// "noEmit": false,	//	不生成输出文件。
-		"importHelpers": true, // 从tslib导入辅助工具函数（比如 __extends， __rest等）
+		"importHelpers": true, // 从tslib导入辅助工具函数(helper 函数), 比如 __extends， __rest等
 		// 当生成文件时指定行结束符： "crlf"（windows）或 "lf"（unix）
 		"newLine": "lf",
 		// 给错误和消息设置样式，使用颜色和上下文。
@@ -132,13 +129,15 @@
 		"removeComments": true, // 删除所有注释，除了以 /!*开头的版权信息
 		"stripInternal": true, //	不对具有 /** @internal */ JSDoc注解的代码生成代码
 		"suppressExcessPropertyErrors": false, // 阻止对对象字面量的额外属性检查
-		"suppressImplicitAnyIndexErrors": true, // 阻止 --noImplicitAny对缺少索引签名的索引对象报错
+		"suppressImplicitAnyIndexErrors": true, // 禁止 --noImplicitAny对缺少索引签名的索引对象报错(隐式 anys 错误)
 		"traceResolution": false, // 生成模块解析日志信息
 		"version": true // 打印编译器版本号
 		// watch		在监视模式下运行编译器。会监视输出文件，在它们改变时重新编译。监视文件和目录的具体实现可以通过环境变量进行配置。
 	},
 	// "include"和"exclude"属性指定一个文件glob匹配模式列表。 支持的glob通配符有：*、**/ 、?。 使用"include"引入的文件可以使用"exclude"属性过滤。
 	"include": [
+		// "viter/*.ts",
+		// "viter/**/*.ts",
 		// "./src",
 		"src/**/*.ts",
 		"src/**/*.tsx",

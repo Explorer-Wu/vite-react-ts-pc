@@ -1,7 +1,7 @@
 import React, { lazy, ReactNode, Suspense } from 'react';
 import { RouteObject, Navigate, useRoutes } from 'react-router-dom';
 // 用懒加载实现优化
-const Root = lazy(() => import('@/layouts/LayoutTemp'));
+const RootLayout = lazy(() => import('@/layouts/LayoutTemp'));
 // const OverView = lazy(() => import("@/views/Overview/index"));
 const Home = lazy(() => import('@/views/home/index'));
 const NotFound = lazy(() => import('@/views/error/index'));
@@ -22,7 +22,7 @@ const routes: RouteObject[] = [
 	},
 	{
 		path: '/views',
-		element: <Root />,
+		element: <RootLayout />,
 		children: [
 			{
 				path: 'home',

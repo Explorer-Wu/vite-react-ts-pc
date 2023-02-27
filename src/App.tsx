@@ -1,11 +1,7 @@
-import React, { lazy } from "react";
-import {
-	BrowserRouter as Router,
-  Routes,
-  Route,
-  useRoutes,
-} from "react-router-dom";
-import { WrapRoutes } from "@/router/index";
+import React, { lazy } from 'react';
+import { BrowserRouter as Router, Routes, Route, useRoutes } from 'react-router-dom';
+import { WrapRoutes } from '@/router/index';
+import { RootContext, RootProvider, useAuthContext } from '@/storehooks/index';
 // import HistoryRule from '@/router/history';
 // import LayoutScreen from "@/components/Visualscreen/LayoutScreen";
 // import MainLayout from "@/layouts/LayoutTemp";
@@ -18,16 +14,20 @@ import { WrapRoutes } from "@/router/index";
 const App: React.FC<any> = (): JSX.Element => {
 	return (
 		// <BrowserRouter forceRefresh={!supportsHistory}>
-    <Router>
-      <WrapRoutes/>
-    </Router>
-  //   <Routes>
-  //   <Route path="/screenfull" element={<LayoutScreen />} />
-  //   <Route path="/" element={<Navigate to="/views/home" replace />} />
-  //   <Route path="/views/home" element={<Home />} />
-  //   <Route path='/*' element={<Navigate to="/error" replace />} />
-  // </Routes>
+		<Router>
+			<WrapRoutes />
+		</Router>
+		//   <Routes>
+		//   <Route path="/screenfull" element={<LayoutScreen />} />
+		//   <Route path="/" element={<Navigate to="/views/home" replace />} />
+		//   <Route path="/views/home" element={<Home />} />
+		//   <Route path='/*' element={<Navigate to="/error" replace />} />
+		// </Routes>
 	);
 };
 
-export default App;
+export default () => (
+	<RootProvider>
+		<App />
+	</RootProvider>
+);

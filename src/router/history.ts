@@ -1,8 +1,7 @@
 import { useNavigate, useLocation, useHref, useLinkClickHandler } from 'react-router-dom';
 
-const HistoryNav = useNavigate();
-
 export default function HistoryRule() {
+	const HistoryNav = useNavigate();
 	let Location = useLocation();
 
 	return {
@@ -18,4 +17,7 @@ export const LinkNav = ({ replace, state, target, to }) =>
 		state,
 		target,
 	});
-export const LinkTo = (to: any, action: any = { replace: true }) => HistoryNav(to, action); // history 的 replace 模式
+export const LinkTo = (to: any, action: any = { replace: true }) => {
+	const HistoryNav = useNavigate();
+	return HistoryNav(to, action); // history 的 replace 模式
+};
