@@ -1,6 +1,6 @@
 // 自动添加请求模块
 let result = {};
-const Apis = import.meta.globEager('./module/*.ts');
+const Apis = import.meta.glob('./module/*.ts');
 
 for (const path in Apis) {
 	// 构造函数对象

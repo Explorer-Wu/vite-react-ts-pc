@@ -38,7 +38,7 @@ export interface ReqList {
 export default function asyncApi(reqs: ReqList[]) {
 	const ApiFnMap: ApiFn = {};
 	// this.reqlis.forEach((req: any) => {
-	for (let req of this.reqs) {
+	for (let req of reqs) {
 		const { name, headers, url, method, usetoken } = req;
 
 		ApiFnMap[name] = async (opts: ReqOpts, sucmsg?: string, errmsg?: string) => {

@@ -38,8 +38,10 @@ type ReqOpts = {
 	headers?: any;
 };
 
-const envconf = require('@/envconfig');
 const isProd = ['production', 'test', 'uat'].includes(process.env.NODE_ENV as any);
+// const envconf = import.meta.glob('@/envs');
+const envBaseUrl = import.meta.env.VITE_APP_API_BASE_URL;
+console.log('envconf:', envBaseUrl, process);
 
 // const [authState, authDispatch] = useReducer(authReducer, authInitState);
 // const authMiddleDispatch = dispatchAuthMiddleware(authDispatch);
@@ -51,7 +53,7 @@ let $quietMsg = false;
 
 // axios实例配置
 const axiosConfig: AxiosRequestConfig = {
-	baseURL: isProd ? envconf.baseUrl : process.env.BASE_URL,
+	baseURL: isProd ? envBaseUrl : process.env.BASE_URL,
 	// 是否跨域携带cookie
 	withCredentials: true,
 	// 请求超时

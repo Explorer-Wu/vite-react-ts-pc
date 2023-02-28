@@ -73,9 +73,9 @@
 			// 路径映射，与 baseUrl 关联
 			// 如使用jq时不想使用默认版本，而需要手动指定版本，可进行如下配置
 			"@/*": ["src/*"],
-			"*": ["node_modules/*"],
 			// "/#/*": ["types/*"]
-			"types/*": ["types/*"]
+			"types/*": ["types/*"],
+      "*": ["node_modules/*"],
 		},
 		// 仅用来控制输出的目录结构 --outDir
 		"outDir": "build/dist", // 重定向输出目录
@@ -109,7 +109,7 @@
 		// 给错误和消息设置样式，使用颜色和上下文。
 		"pretty": true,
 		// 将每个文件作为单独的模块（与“ts.transpileModule”类似）。
-		"isolatedModules": true, // 提供额外的一些语法检查，如文件没有模块导出会报错
+		"isolatedModules": false, // 提供额外的一些语法检查，如文件没有模块导出会报错
 		"diagnostics": true, // 显示诊断信息
 		"extendedDiagnostics": false, // 显示详细的诊段信息
 		"disableSizeLimit": false, //	禁用JavaScript工程体积大小的限制

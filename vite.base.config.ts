@@ -10,12 +10,13 @@ import vitePluginImp from 'vite-plugin-imp';
 // this plugin is used for use svg as react component in vite
 import svgrPlugin from 'vite-plugin-svgr';
 import Inspect from 'vite-plugin-inspect';
+import basicSsl from '@vitejs/plugin-basic-ssl';
 // * No declaration file for less-vars-to-js
-import lessToJS from 'less-vars-to-js';
+// import lessToJS from 'less-vars-to-js';
 import fs from 'fs';
 import path from 'path';
 
-const appDir = fs.realpathSync(process.cwd());
+// const appDir = fs.realpathSync(process.cwd());
 
 // const themeVariables = lessToJS(
 //   fs.readFileSync(path.resolve(__dirname, './variables.less'), 'utf8')
@@ -30,6 +31,7 @@ export default defineConfig({
 	plugins: [
 		// Inspect(),
 		react(), // reactJsx(),
+    basicSsl(),
 		// reactRefresh(),
 		svgrPlugin(),
 		vitePluginImp({
@@ -49,6 +51,7 @@ export default defineConfig({
 			],
 		}),
 	],
+  define: { 'process.env': {} },
 	css: {
 		preprocessorOptions: {
 			less: {
@@ -102,7 +105,7 @@ export default defineConfig({
 			'.svg',
 		], // '.wasm',
 		alias: {
-			'@': path.resolve(appDir, './src'),
+			'@': path.resolve(__dirname, './src'), // path.resolve(appDir, './src'),
 		},
 	},
 	envPrefix: 'VITE_',

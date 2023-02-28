@@ -6,7 +6,8 @@ import react from '@vitejs/plugin-react'; // 和plugin-react-refresh冲突
 export default defineConfig({
 	// base: './',
 	server: {
-		port: 3606,
+		port: 3606, // 开发服务器端口
+    host: true, // 监听所有地址，包括局域网和公网地址
 		proxy: {
 			'/api': {
 				target: 'http://172.0.0.1:8080',
