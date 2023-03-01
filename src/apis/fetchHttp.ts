@@ -9,42 +9,15 @@ import { StreamPost, StreamGet, convertRes2Blob } from '@/apis/upDownloadFile';
 import { FetchCacheCanceler } from './fetchCacheCancel';
 import { AuthStateType, AuthActionType, AuthActionOpts } from '@/storehooks/reducers/types';
 import { authInitState, authReducer, dispatchAuthMiddleware } from '@/storehooks/reducers/auth';
+import type { CustomRequestConfig, CustomAxiosResponse, CustomAxiosError, ReqOptsConfig } from './types';
 
-interface CustomRequestConfig<D = any> extends AxiosRequestConfig {
-	usetoken?: boolean;
-	// isFormdata: boolean;
-	fetchLock?: boolean;
-	quiet?: boolean;
-	readType?: string;
-}
-interface CustomAxiosResponse<T = any, D = any> extends AxiosResponse {
-	config: CustomRequestConfig<D>;
-	traceId?: any;
-}
-interface CustomAxiosError<T = unknown, D = any> extends AxiosError {
-	constructor(response?: CustomAxiosResponse<T, D>);
-	response?: CustomAxiosResponse<T, D>;
-}
-
-type ReqOpts = {
-	method: string;
-	url: string;
-	requestConfig?: AxiosRequestConfig;
-	paramId?: string | number;
-	params?: any;
-	data?: any;
-	usetoken?: boolean;
-	isFormdata?: boolean;
-	headers?: any;
-};
-
-const isProd = ['production', 'test', 'uat'].includes(process.env.NODE_ENV as any);
+const isProd = ['production', 'staging', 'testing'].includes(import.meta.env.MODE);
 // const envconf = import.meta.glob('@/envs');
-const envBaseUrl = import.meta.env.VITE_APP_API_BASE_URL;
-console.log('envconf:', envBaseUrl, process);
+const envBaseUrl = import.meta.env.APP_API_BASE_URL;
+console.log('envconf:', import.meta.env);
 
-// const [authState, authDispatch] = useReducer(authReducer, authInitState);
-// const authMiddleDispatch = dispatchAuthMiddleware(authDispatch);
+const [authState, authDispatch] = useReducer(authReducer, authInitState);
+const authMiddleDispatch = dispatchAuthMiddleware(authDispatch);
 
 // 是否开启请求锁。
 let fetchLock = true;
@@ -53,7 +26,7 @@ let $quietMsg = false;
 
 // axios实例配置
 const axiosConfig: AxiosRequestConfig = {
-	baseURL: isProd ? envBaseUrl : process.env.BASE_URL,
+	baseURL: isProd ? envBaseUrl : import.meta.env.BASE_URL,
 	// 是否跨域携带cookie
 	withCredentials: true,
 	// 请求超时
@@ -109,37 +82,37 @@ const doneErrStatusMap = http =>
 			response => {
 				if (response.headers.authorization) {
 					const { config } = response;
-					// return new Promise(resolve => {
-					// 	if (!http.isRefreshToken) {
-					// 		http.isRefreshToken = true;
+					return new Promise(resolve => {
+						if (!http.isRefreshToken) {
+							http.isRefreshToken = true;
 
-					// 		try {
-					// 			authMiddleDispatch({
-					// 				type: AuthActionType.AuthUpdate,
-					// 				payload: {
-					// 					authed: true,
-					// 				},
-					// 			});
+							try {
+								authMiddleDispatch({
+									type: AuthActionType.AuthUpdate,
+									payload: {
+										authed: true,
+									},
+								});
 
-					// 			const { token } = authState;
+								const { token } = authState;
 
-					// 			// 已经刷新了token，将所有队列中的请求进行重试
-					// 			http.requests.forEach(cb => cb(token)); // getUserToken().accessToken)
-					// 			http.requests = [];
+								// 已经刷新了token，将所有队列中的请求进行重试
+								http.requests.forEach(cb => cb(token)); // getUserToken().accessToken)
+								http.requests = [];
 
-					// 			// 重试当前请求并返回promise
-					// 			resolve(http.retryOrigRequest(config) as any);
-					// 		} catch (err) {
-					// 			console.error('refreshtoken error =>', err);
-					// 			// window.location.href = '/';
-					// 			// 返回 401 清除过期token信息并跳转到登录页
-					// 			HrefTo('/auth/login');
-					// 		}
+								// 重试当前请求并返回promise
+								resolve(http.retryOrigRequest(config) as any);
+							} catch (err) {
+								console.error('refreshtoken error =>', err);
+								// window.location.href = '/';
+								// 返回 401 清除过期token信息并跳转到登录页
+								HrefTo('/auth/login');
+							}
 
-					// 		http.isRefreshToken = false;
-					// 	}
-					// 	resolve(http.axiosInstance(config) as any);
-					// });
+							http.isRefreshToken = false;
+						}
+						resolve(http.axiosInstance(config) as any);
+					});
 				}
 
 				// 返回 401 清除过期token信息并跳转到登录页
@@ -317,7 +290,7 @@ class HttpFetch {
 		);
 	} /** 通用请求工具函数 */
 
-	public ajax<T>(opts: ReqOpts): Promise<T> {
+	public ajax<T>(opts: ReqOptsConfig): Promise<T> {
 		const { headers, url, method, isFormdata, usetoken, params, data } = opts;
 
 		const config = {

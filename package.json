@@ -5,7 +5,11 @@
   "description": "vite 构建react+ts pc端单页面应用模版",
   "scripts": {
     "start": "vite",
-    "dev:testmode": "vite --mode testmode",
+    "dev:local": "vite --mode _local",
+    "testing": "vite --mode testing",
+    "staging": "vite --mode staging",
+    "build:testing": "tsc && vite build --mode testing",
+    "build:staging": "tsc && vite build --mode staging",
     "build": "tsc && vite build",
     "build:noTypeCheck": "vite build",
     "preview": "vite preview",

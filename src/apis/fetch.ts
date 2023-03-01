@@ -12,31 +12,15 @@ import { LinkTo, HrefTo } from '@/router/history';
 import { getUserToken, formatToken, setToken, removeToken } from '@/utils/auth';
 import { StreamPost, StreamGet, convertRes2Blob } from '@/apis/upDownloadFile';
 import { authInitState, authReducer } from '@/storehooks/reducers/auth';
+import type { CustomRequestConfig, CustomAxiosResponse, CustomAxiosError, ReqOptsConfig } from './types';
 
-// const { getCookie, setCookie, delCookie, getSession, setSession, delSession, clearSession } =
-// 	CookieStorage;
+// const { getCookie, setCookie, delCookie, getSession, setSession, delSession, clearSession } = CookieStorage;
 
 const [authState, authDispatch] = useReducer(authReducer, authInitState);
 
-// interface CustomAxiosInstance extends AxiosInstance {
-// 	setToken: (token: string) => void;
-// }
-interface CustomRequestConfig<D = any> extends AxiosRequestConfig {
-	usetoken?: boolean;
-	// isFormdata: boolean;
-	fetchLock?: boolean;
-	quiet?: boolean;
-	readType?: string;
-}
-interface CustomAxiosResponse<T = any, D = any> extends AxiosResponse {
-	// data: T;
-	// status: number;
-	// statusText: string;
-	config: CustomRequestConfig<D>;
-}
 
 const envconf = require('@/envconfig');
-const isProd = ['production', 'test', 'uat'].includes(process.env.NODE_ENV as any);
+const isProd = ['production', 'test', 'uat'].includes(process.env.VITE_NODE_ENV as any);
 
 /* 是否正在刷新请求token */
 let isRefreshToken = false;

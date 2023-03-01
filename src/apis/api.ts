@@ -1,6 +1,7 @@
 import type { AxiosResponse, AxiosError } from 'axios';
 import { httpFetch } from './fetchHttp';
 import { message } from 'antd';
+import type { ReqList, ReqOpts, ApiFnMap } from './types';
 
 // export type UserResult = {
 //   success: boolean
@@ -16,32 +17,13 @@ import { message } from 'antd';
 //   }
 // }
 
-export interface ApiFn {
-	[propName: string]: Function | any;
-}
-
-export interface ReqOpts {
-	paramId?: string;
-	params?: any;
-	data?: any;
-}
-
-export interface ReqList {
-	name: string;
-	url: string;
-	method?: string;
-	usetoken?: boolean;
-	isFormdata?: boolean;
-	headers?: any;
-}
-
 export default function asyncApi(reqs: ReqList[]) {
-	const ApiFnMap: ApiFn = {};
+	const apiFnMap: ApiFnMap = {};
 	// this.reqlis.forEach((req: any) => {
 	for (let req of reqs) {
 		const { name, headers, url, method, usetoken } = req;
 
-		ApiFnMap[name] = async (opts: ReqOpts, sucmsg?: string, errmsg?: string) => {
+		apiFnMap[name] = async (opts: ReqOpts, sucmsg?: string, errmsg?: string) => {
 			let queryData = JSON.parse(JSON.stringify(opts));
 			console.log('api-opts:', opts);
 
@@ -73,5 +55,5 @@ export default function asyncApi(reqs: ReqList[]) {
 		};
 	}
 
-	return ApiFnMap;
+	return apiFnMap;
 }

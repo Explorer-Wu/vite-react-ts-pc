@@ -56,7 +56,7 @@
 		"moduleResolution": "Node", // 指定模块解析策略, 'node' 用于 Node.js 的 CommonJS 实现
 		"esModuleInterop": true, // 支持 CommonJS 和 ES 模块之间的互操作性,  CommonJS/AMD/UMD 模块导入兼容
 		// "importsNotUsedAsValues": "preserve",
-		// "incremental": true,
+    "incremental": true, // 通过从以前的编译中读取/写入信息到磁盘上的文件来启用增量编译
 		"resolveJsonModule": true, // 支持导入 json 模块
 		"useDefineForClassFields": true,
 		"preserveSymlinks": false, // 不把符号链接解析为其真实路径；将符号链接文件视为真正的文件
@@ -119,7 +119,7 @@
 		"noLib": false, // 不包含默认的库文件（ lib.d.ts）
 		"noResolve": false, // 不把 /// <reference``>或模块导入的文件加到编译文件列表。
 		"noStrictGenericChecks": false, // 禁用在函数类型里对泛型签名进行严格检查。
-		"noUnusedLocals": true, // 若有未使用的局部变量则抛错
+		"noUnusedLocals": false, // 若有未使用的局部变量则抛错
 		"noUnusedParameters": false, // 若有未使用的参数则抛错
 		"noFallthroughCasesInSwitch": true, // 报告switch语句的fallthrough错误。（即，不允许switch的case语句贯穿）
 		"noImplicitReturns": true, // 不是函数的所有返回路径都有返回值时报错。

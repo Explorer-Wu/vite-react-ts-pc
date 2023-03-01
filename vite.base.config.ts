@@ -28,6 +28,7 @@ export default defineConfig({
 	base: './',
 	// 环境变量设置所在文件夹路径
 	envDir: './env',
+  envPrefix: ['VITE_','APP_'],
 	plugins: [
 		// Inspect(),
 		react(), // reactJsx(),
@@ -51,7 +52,7 @@ export default defineConfig({
 			],
 		}),
 	],
-  define: { 'process.env': {} },
+  // define: { 'process': {} },
 	css: {
 		preprocessorOptions: {
 			less: {
@@ -108,5 +109,4 @@ export default defineConfig({
 			'@': path.resolve(__dirname, './src'), // path.resolve(appDir, './src'),
 		},
 	},
-	envPrefix: 'VITE_',
 });
