@@ -1,5 +1,5 @@
 // @ts-ignore
-import { defineConfig, loadEnv, type ConfigEnv } from 'vite';
+import { defineConfig, loadEnv, type ConfigEnv, type UserConfig } from 'vite';
 import react from '@vitejs/plugin-react'; // 和plugin-react-refresh冲突
 // import reactJsx from 'vite-react-jsx';
 // import reactRefresh from '@vitejs/plugin-react-refresh';
@@ -23,15 +23,29 @@ const resolveEnvFn = {
  * @mode: 'production' | 'development'
  * @ssrBuild: boolean
  */
-export default defineConfig(({ command, mode, ssrBuild }: ConfigEnv) => {
+export default defineConfig(({ command, mode, ssrBuild }: ConfigEnv): UserConfig => {
   // 根据当前工作目录中的 `mode` 加载 .env 文件
 	// 设置第三个参数为 '' 来加载所有环境变量，而不管是否有 `VITE_` 前缀。
 	const viteEnv = loadEnv(mode, resolve('./env'), ['VITE_', 'APP_']); // prefix ['VITE_', 'APP_']
+
+  const processEnvPrefix = Object.entries(viteEnv).reduce(
+    (prev, [key, val]) => {
+      return {
+        ...prev,
+        ['process.env.' + key]: `"${val}"`,
+        // "process.env": `${JSON.stringify(viteEnv)}`,
+      };
+    },
+    {},
+  );
   
-	console.log('process.cwd:', viteEnv, process.cwd());
+	console.log('process.cwd:', viteEnv, process.env);
   
   return {
     ...resolveEnvFn[command](viteEnv),
 	  base: viteEnv.BASE_URL,
+    define: {
+      ...processEnvPrefix,
+    },
   }
 });

@@ -1,16 +1,5 @@
 export type ErrorMessageMode = 'none' | 'modal' | 'message' | undefined;
 
-export interface AxiosInstance {
-  <T = any>(config: AxiosRequestConfig): Promise<T>;
-  request<T = any> (config: AxiosRequestConfig): Promise<T>;
-  get<T = any>(url: string, config?: AxiosRequestConfig): Promise<T>;
-  delete<T = any>(url: string, config?: AxiosRequestConfig): Promise<T>;
-  head<T = any>(url: string, config?: AxiosRequestConfig): Promise<T>;
-  post<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T>;
-  put<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T>;
-  patch<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T>;
-}
-
 export interface RequestOptions {
   // Splicing request parameters to url
   joinParamsToUrl?: boolean;
@@ -62,7 +51,7 @@ export interface ResultList<T = any> {
 // multipart/form-data: upload file
 export interface UploadFileParams {
   // Other parameters
-  data?: Recordable;
+  data?: any; // Recordable;
   // File parameter interface field name
   name?: string;
   // file name

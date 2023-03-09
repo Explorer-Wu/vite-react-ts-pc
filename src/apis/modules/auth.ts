@@ -1,4 +1,5 @@
-import asyncApi, { type ApiFn } from '../api';
+import asyncApi from '../api';
+import type { ApiFnMap } from '../types';
 
 const ApiAuthOpts = [
 	{
@@ -18,6 +19,6 @@ const ApiAuthOpts = [
 	},
 ];
 
-const ApisAuth: ApiFn = asyncApi(ApiAuthOpts);
+const ApisAuth: ApiFnMap = asyncApi(ApiAuthOpts);
 
 export default ApisAuth;

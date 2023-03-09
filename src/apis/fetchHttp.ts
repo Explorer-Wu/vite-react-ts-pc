@@ -4,11 +4,13 @@ import { message } from 'antd';
 import React, { useReducer, type Dispatch, type PropsWithChildren } from 'react';
 import { LinkTo, HrefTo } from '@/router/history';
 import CookieStorage from '@/utils/storagecookies';
-import { getUserToken, formatToken, setToken, removeToken } from '@/utils/auth';
+import { getUserToken, formatToken, setToken, removeToken, fetchRefreshToken } from '@/utils/auth';
 import { StreamPost, StreamGet, convertRes2Blob } from '@/apis/upDownloadFile';
 import { FetchCacheCanceler } from './fetchCacheCancel';
-import { AuthStateType, AuthActionType, AuthActionOpts } from '@/storehooks/reducers/types';
-import { authInitState, authReducer, dispatchAuthMiddleware } from '@/storehooks/reducers/auth';
+// import { AuthStateType, AuthActionType, AuthActionOpts } from '@/storehooks/reducers/types';
+// import { authInitState, initStateFn, authReducer, dispatchAuthMiddleware } from '@/storehooks/reducers/auth';
+import ApisAuth from './modules/auth';
+
 import type { CustomRequestConfig, CustomAxiosResponse, CustomAxiosError, ReqOptsConfig } from './types';
 
 const isProd = ['production', 'staging', 'testing'].includes(import.meta.env.MODE);
@@ -16,8 +18,16 @@ const isProd = ['production', 'staging', 'testing'].includes(import.meta.env.MOD
 const envBaseUrl = import.meta.env.APP_API_BASE_URL;
 console.log('envconf:', import.meta.env);
 
-const [authState, authDispatch] = useReducer(authReducer, authInitState);
-const authMiddleDispatch = dispatchAuthMiddleware(authDispatch);
+/**
+ * 1. 不要在普通的JavaScript函数中调用Hook。
+ *    因为在普通函数中使用的hooks函数实际上都是名为throwInvalidHookError的函数。
+ * 
+ * 2. 不要在循环，条件或嵌套函数中调用Hook。
+ *    因为如果hooks的执行顺序发生变化会导致 hooks 中使用错误的 hook对象。
+ */
+
+// const [authState, authDispatch] = useReducer(authReducer, authInitState, initStateFn);
+// const authMiddleDispatch = dispatchAuthMiddleware(authDispatch);
 
 // 是否开启请求锁。
 let fetchLock = true;
@@ -63,16 +73,19 @@ const fetchCacheCanceler = new FetchCacheCanceler();
 
 // 错误状态信息
 const errStatusInfo = {
-	400: '错误请求',
-	401: '未授权，请重新登录', // 指示身份验证是必需的，没有提供身份验证或身份验证失败。 如果请求已经包含授权凭据（过期了），那么401状态码表示不接受这些凭据。
-	403: '拒绝访问', // 指示尽管请求有效，但服务器拒绝响应它。 与401状态码不同，提供身份验证不会改变结果。
+  302: '接口重定向了',
+	400: '错误请求', // '参数不正确！'
+	401: '未授权，或者登录已经超时，请先登录', // 指示身份验证是必需的，没有提供身份验证或身份验证失败。 如果请求已经包含授权凭据（过期了），那么401状态码表示不接受这些凭据。
+	403: '拒绝访问，没有权限操作', // 指示尽管请求有效，但服务器拒绝响应它。 与401状态码不同，提供身份验证不会改变结果。
 	404: '请求出错，未找到资源',
+  405: '请求方法未允许',
 	408: '请求超时',
+  409: '系统已存在相同数据',
 	500: '服务端出错',
 	501: '服务未实现',
 	502: '网络错误',
 	503: '服务不可用',
-	504: '网络超时',
+	504: '网络超时', // '服务暂时无法访问，请稍后再试！'
 	505: 'http版本不支持该请求',
 };
 const doneErrStatusMap = http =>
@@ -80,24 +93,29 @@ const doneErrStatusMap = http =>
 		[
 			401,
 			response => {
+        // const authErrCodes: any = {
+        //   40101: '登录失效，需要重新登录', // token 失效
+        //   40102: '登录权限过期，请重新登录', // token 过期
+        //   40103: '账户未绑定角色，请联系管理员绑定角色',
+        //   40104: '该用户未注册，请联系管理员注册用户',
+        //   40105: 'code 无法获取对应第三方平台用户',
+        //   40106: '该账户未关联手机，请联系管理员做关联',
+        //   40107: '账号已无效',
+        //   40108: '账号未找到',
+        // }
+      
 				if (response.headers.authorization) {
-					const { config } = response;
+					const { config, code } = response;
 					return new Promise(resolve => {
 						if (!http.isRefreshToken) {
 							http.isRefreshToken = true;
-
+              
 							try {
-								authMiddleDispatch({
-									type: AuthActionType.AuthUpdate,
-									payload: {
-										authed: true,
-									},
-								});
-
-								const { token } = authState;
+                fetchRefreshToken(getUserToken().accessToken);
+								// const { token } = authState;
 
 								// 已经刷新了token，将所有队列中的请求进行重试
-								http.requests.forEach(cb => cb(token)); // getUserToken().accessToken)
+								http.requests.forEach(cb => cb(getUserToken().accessToken));
 								http.requests = [];
 
 								// 重试当前请求并返回promise

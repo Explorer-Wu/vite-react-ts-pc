@@ -1,3 +1,5 @@
+/// <reference types="vite-plugin-svgr/client" />
+
 /**
  * @filename global.d.ts
  * @description 全局ts声明
@@ -19,46 +21,10 @@ declare module '*.jpeg';
 declare module '*.gif';
 declare module '*.bmp';
 declare module '*.tiff';
-// declare module '*.svg';
-declare module '*.svg' {
-  export function ReactComponent(props: React.SVGProps<SVGSVGElement>): React.ReactElement;
-  const url: string;
-  export default url;
-}
+
+//client.d.ts 有声明模块 '*.svg'、'*.css'、'*.scss'、'*.sass'、'*.less'、'*.styl'等;
 
 //  declare const REACT_APP_ENV: 'test' | 'dev' | 'uat' | 'prod' | false;
-// declare module '*.css';
-// declare module '*.less';
-// declare module '*.scss';
-// declare module '*.sass';
-// declare module '*.scss' {
-//   const content: Record<string, string>
-//   export default content
-// }
-declare module '*.css' {
-  const classes: { [key: string]: string };
-  export default classes;
-}
-
-declare module '*.scss' {
-  const classes: { [key: string]: string };
-  export default classes;
-}
-
-declare module '*.sass' {
-  const classes: { [key: string]: string };
-  export default classes;
-}
-
-declare module '*.less' {
-  const classes: { [key: string]: string };
-  export default classes;
-}
-
-declare module '*.styl' {
-  const classes: { [key: string]: string };
-  export default classes;
-}
 
 declare module 'mockjs';
 

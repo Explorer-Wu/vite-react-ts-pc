@@ -1,5 +1,5 @@
 const path = require('path');
-const isProd = ['production', 'test', 'uat'].includes(process.env.NODE_ENV);
+const isProd = ['production', 'testing', 'staging'].includes(process.env.VITE_NODE_ENV);
 const prettierConfig = require('./prettier.config.js');
 
 module.exports = {
@@ -8,8 +8,9 @@ module.exports = {
 	env: {
 		node: true,
 		es6: true,
+    // es2021: true,
 		browser: true,
-		// jest: true,
+		jest: true,
 	},
 
 	// 解析器
@@ -25,8 +26,8 @@ module.exports = {
 			tsx: true,
 			modules: true,
 		},
-		project: path.resolve(__dirname, './tsconfig.json'),
-		// tsconfigRootDir: __dirname,
+		project: './tsconfig.json', // path.resolve(__dirname, './tsconfig.json'),
+		tsconfigRootDir: __dirname,
 		// createDefaultProgram: true,
 	},
 
@@ -40,6 +41,7 @@ module.exports = {
 		'prettier', // === 'prettier/@typescript-eslint' + 'prettier/react'
 		'plugin:react/recommended',
 		'plugin:react-hooks/recommended',
+    // "plugin:react/jsx-runtime",
 		'plugin:jsx-control-statements/recommended',
 	],
 
@@ -99,6 +101,8 @@ module.exports = {
 		// These rules don't add much value, are better covered by TypeScript and good definition files
 
 		// React相关校验规则
+    'react/no-unknown-property': ["error", { "ignore": ["css"] }],
+    'react/no-unescaped-entities': "off",
 		'react/no-direct-mutation-state': 'off',
 		'react/no-deprecated': 'off',
 		'react/no-string-refs': 'off',
@@ -124,8 +128,10 @@ module.exports = {
 		// "global-require": 0,
 		'no-debugger': isProd ? 'warn' : 'off',
 		'no-console': 'off', // ["warn", { allow: ["warn", "error"] }],
-		eqeqeq: ['warn', 'always'], // 对于”==“和”===“的校验
+		'eqeqeq': ['warn', 'always'], // 对于”==“和”===“的校验
 		'prefer-const': ['error', { destructuring: 'all', ignoreReadBeforeAssign: true }],
+    'semi': ["error","always"],
+    'comma-dangle': ["error", "always-multiline"],
 	},
 	settings: {
 		'import/parsers': {
@@ -141,6 +147,9 @@ module.exports = {
 			},
 			alias: [['@', './src']],
 		},
+    'react': {
+      version: "detect"
+    }
 		// "import/ignore": ["@types"], // Weirdly eslint cannot resolve exports in types folder (try removing this later)
 	},
 };

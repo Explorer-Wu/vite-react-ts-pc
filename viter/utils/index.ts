@@ -5,9 +5,9 @@ const packageConfig = require('../../package.json');
 const appDir = fs.realpathSync(process.cwd());
 
 module.exports = {
-	mode: process.env.NODE_ENV, // ?? 'production',
+	mode: process.env.VITE_NODE_ENV, // ?? 'production',
 	// isDevServer: process.env.WEBPACK_IS_DEV_SERVER === 'true',
-	isProd: ['production', 'uat', 'test'].includes(process.env.NODE_ENV as any),
+	isProd: ['production', 'testing', 'staging'].includes(process.env.VITE_NODE_ENV as any),
 	isDev: !exports.isProd,
 	resolve: _path => path.resolve(appDir, _path), // 获取绝对路径
 	/**__dirname 返回的是当前模块的目录名称，即：被执行的 JavaScript 文件所在目录路径

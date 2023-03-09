@@ -19,8 +19,8 @@ import type { CustomRequestConfig, CustomAxiosResponse, CustomAxiosError, ReqOpt
 const [authState, authDispatch] = useReducer(authReducer, authInitState);
 
 
-const envconf = require('@/envconfig');
-const isProd = ['production', 'test', 'uat'].includes(process.env.VITE_NODE_ENV as any);
+// const envconf = require('@/envconfig');
+const isProd = ['production', 'testing', 'staging'].includes(process.env.VITE_NODE_ENV as any);
 
 /* 是否正在刷新请求token */
 let isRefreshToken = false;
@@ -31,7 +31,7 @@ let $quietMsg = false;
 
 // axios实例配置
 const configAxios: AxiosRequestConfig = {
-	baseURL: isProd ? envconf.baseUrl : process.env.BASE_URL,
+	baseURL: isProd ? process.env.APP_API_BASE_URL : process.env.BASE_URL,
 	// 是否跨域携带cookie
 	withCredentials: true,
 	// 请求超时
@@ -298,8 +298,8 @@ const InterceptorsResponse = {
 			return false;
 		}
 
-		// 后端约定当4013时表示token过期了，要求刷新token
-		if (data.code === 4013) {
+		// 后端约定当40102时表示token过期了，要求刷新token
+		if (data.code === 40102) {
 			if (!isRefreshToken) {
 				isRefreshToken = true;
 				return getRefreshToken()

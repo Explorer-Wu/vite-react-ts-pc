@@ -1,4 +1,4 @@
-import type { Dispatch } from 'react';
+import { useReducer, type Dispatch } from 'react';
 import Axios from 'axios';
 import ApisAuth from '@/apis/modules/auth';
 import { LinkTo, HrefTo } from '@/router/history';
@@ -6,15 +6,19 @@ import { LinkTo, HrefTo } from '@/router/history';
 import { getUserToken, formatToken, setToken, removeToken } from '@/utils/auth';
 import { AuthStateType, AuthActionType, AuthActionOpts, Dispatcher } from './types';
 
-const authInitState = {
+const authInitState: AuthStateType = {
 	pending: true,
 	authed: !getUserToken() ? false : true,
-	token: getUserToken(),
+	token: getUserToken().accessToken,
 	user: {
 		id: null,
 		name: '',
 	},
 };
+
+function initStateFn(initVal): AuthStateType {
+  return { ...initVal };
+}
 
 async function fetchDataFn(payload, errorReturn = undefined) {
 	try {
@@ -40,6 +44,11 @@ async function fetchReducer(state, action) {
 		return state;
 	}
 }
+
+// function extraReducer({ reducer, initVal, initFn }) {
+//   // const [state, dispatch] = useReducer(reducer, initVal, initFn);
+//   return useReducer(reducer, initVal, initFn);
+// }
 
 function dispatchAuthMiddleware(next: Dispatch<AuthActionOpts>): Dispatcher {
 	return async (action: AuthActionOpts) => {
@@ -72,7 +81,7 @@ function dispatchAuthMiddleware(next: Dispatch<AuthActionOpts>): Dispatcher {
 	};
 }
 
-function authReducer(state: AuthStateType = authInitState, action?: AuthActionOpts): AuthStateType {
+function authReducer(state: AuthStateType, action?: AuthActionOpts): AuthStateType {
 	const { authed, accessToken, refreshKey, expires, userInfo } = action.payload;
 
 	switch (action.type) {
@@ -112,12 +121,7 @@ function authReducer(state: AuthStateType = authInitState, action?: AuthActionOp
 			removeToken();
 			Axios.defaults.headers.common.Authorization = '';
 			// router.push('/login');
-			return {
-				// pending: false,
-				// authed,
-				// token: '',
-				...authInitState,
-			};
+			return initStateFn(action.payload);
 
 		case AuthActionType.AuthUpdate:
 			if (!action.payload.authed && action.payload.authed !== undefined) {
@@ -149,4 +153,4 @@ function authReducer(state: AuthStateType = authInitState, action?: AuthActionOp
 	}
 }
 
-export { authInitState, authReducer, dispatchAuthMiddleware, fetchReducer };
+export { authInitState, initStateFn, authReducer, dispatchAuthMiddleware, fetchReducer };

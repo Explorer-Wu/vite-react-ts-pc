@@ -1,11 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Card, Tag, Button } from "antd";
-// use svg as ReactComponent
+import { useCounter } from '@/storehooks/useCounter';
+// 使用svg as ReactComponent 在d.ts文件加 <reference types="vite-plugin-svgr/client" />
 import { ReactComponent as Logo } from '@/assets/images/logo.svg';
 
-const Home: React.FC<any> = () => {
-	const [count, setCount] = useState(0);
+type CounterProps = {
+  initNum?: number;
+  // title: string;
+  // children: React.ReactNode;
+}
 
+const Home: React.FC<any> = (props: CounterProps) => {
+  const { initNum } = props;
+  const { count, increment } = useCounter(initNum);
 	// useEffect(() => {
 	// 	const Timer = setInterval(() => {
 	// 		setCount(prev => prev + 1);
@@ -18,14 +25,14 @@ const Home: React.FC<any> = () => {
 		<Card title="HomePage">
       <Logo height="240" width="240" />
       {/* <img src={Logo} height="240" width="240"/> */}
+      <h1>Vite + Jest + React</h1>
       <p>
-        <Button type="primary" size="large" onClick={() => setCount((num) => num + 1)}>
-          counter
-        </Button>
-        mounted start <Tag color="cyan">count：{count}</Tag> unmounted clear
+        mounted start <Tag color="cyan">count is: {count}</Tag> unmounted clear
       </p>
+      <Button type="primary" size="large" onClick={increment}>
+        counter
+      </Button>
      
-			
       <p>
           <a
             className="App-link"

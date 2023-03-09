@@ -1,3 +1,5 @@
+import { message } from 'antd';
+import { httpFetch } from '@/apis/fetchHttp';
 import CookieStorage from './storagecookies';
 const { getCookie, setCookie, delCookie, getSession, setSession, delSession, clearSession } =
 	CookieStorage;
@@ -47,4 +49,33 @@ export function setToken(data: AuthInfo<string | number>) {
 export function removeToken() {
 	delSession('user_token');
 	delCookie('refresh_key');
+}
+
+export async function fetchRefreshToken(token): Promise<any> {
+  try {
+    const resData: any = await httpFetch.ajax({
+      url: '/auth/refreshToken',
+      method: 'post',
+      data: {
+        token,
+      },
+    });
+    const { code, data: { user_token, refresh_key, expires } } = resData;
+    if (code === 'success') {
+      // return {
+      //   user_token,
+      //   refresh_key,
+      //   expires
+      // };
+      
+      removeToken();
+      user_token && refresh_key && expires && setToken({
+        accessToken: user_token,
+        refreshKey: refresh_key,
+        expires,
+      });
+    }
+  } catch (error: any) {
+    message.error(`${error.message || 'token更新失败！'}`);
+  }
 }

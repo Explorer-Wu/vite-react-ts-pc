@@ -1,4 +1,4 @@
-function param(json) {
+function param(json: object | undefined | null) {
   if (!json) return ''
   return Object.keys(json).map(key => {
     if (json[key] === undefined) return ''
@@ -7,7 +7,7 @@ function param(json) {
   }).join('&')
 }
 
-function param2Obj(url) {
+function param2Obj(url: string | undefined) {
   const search = url.split('?')[1]
   if (!search) {
     return {}
@@ -15,7 +15,7 @@ function param2Obj(url) {
   return JSON.parse('{"' + decodeURIComponent(search).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}')
 }
 
-function param3Obj(body) {
+function param3Obj(body: string) {
   if (!body) {
     return {}
   }
@@ -30,7 +30,7 @@ function isEmptyValue (value) {
   return value === null || value === undefined || value === ''
 }
 
-function formatDataTime (t, fmt = 'yyyy-MM-dd hh:mm:ss') {
+function formatDataTime (t, fmt: string = 'yyyy-MM-dd hh:mm:ss') {
   let o = {
     'M+': t.getMonth() + 1,
     'd+': t.getDate(),
