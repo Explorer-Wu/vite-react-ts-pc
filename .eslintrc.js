@@ -8,7 +8,7 @@ module.exports = {
 	env: {
 		node: true,
 		es6: true,
-    // es2021: true,
+		// es2021: true,
 		browser: true,
 		jest: true,
 	},
@@ -41,7 +41,7 @@ module.exports = {
 		'prettier', // === 'prettier/@typescript-eslint' + 'prettier/react'
 		'plugin:react/recommended',
 		'plugin:react-hooks/recommended',
-    // "plugin:react/jsx-runtime",
+		// "plugin:react/jsx-runtime",
 		'plugin:jsx-control-statements/recommended',
 	],
 
@@ -101,8 +101,8 @@ module.exports = {
 		// These rules don't add much value, are better covered by TypeScript and good definition files
 
 		// React相关校验规则
-    'react/no-unknown-property': ["error", { "ignore": ["css"] }],
-    'react/no-unescaped-entities': "off",
+		'react/no-unknown-property': ['error', { ignore: ['css'] }],
+		'react/no-unescaped-entities': 'off',
 		'react/no-direct-mutation-state': 'off',
 		'react/no-deprecated': 'off',
 		'react/no-string-refs': 'off',
@@ -119,19 +119,21 @@ module.exports = {
 		'react/jsx-uses-react': 'error',
 		// "react/jsx-uses-vars": "error",
 		// "react/jsx-key": "warn",
-		'react/react-in-jsx-scope': 'off',
+		'react/react-in-jsx-scope': 'warn', // 'off',
+		// 检查 Hooks 的使用规则
+		'react-hooks/rules-of-hooks': 'error',
+		// 检查依赖项的声明
 		'react-hooks/exhaustive-deps': 'warn',
-		'react-hooks/rules-of-hooks': 'error', // "warn",
 
 		'jsx-control-statements/jsx-use-if-tag': 'off',
 		'prettier/prettier': ['error', prettierConfig],
 		// "global-require": 0,
 		'no-debugger': isProd ? 'warn' : 'off',
 		'no-console': 'off', // ["warn", { allow: ["warn", "error"] }],
-		'eqeqeq': ['warn', 'always'], // 对于”==“和”===“的校验
+		eqeqeq: ['warn', 'always'], // 对于”==“和”===“的校验
 		'prefer-const': ['error', { destructuring: 'all', ignoreReadBeforeAssign: true }],
-    'semi': ["error","always"],
-    'comma-dangle': ["error", "always-multiline"],
+		semi: ['error', 'always'],
+		'comma-dangle': ['error', 'always-multiline'],
 	},
 	settings: {
 		'import/parsers': {
@@ -147,9 +149,9 @@ module.exports = {
 			},
 			alias: [['@', './src']],
 		},
-    'react': {
-      version: "detect"
-    }
+		react: {
+			version: 'detect',
+		},
 		// "import/ignore": ["@types"], // Weirdly eslint cannot resolve exports in types folder (try removing this later)
 	},
 };

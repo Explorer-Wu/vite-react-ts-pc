@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, matchRoutes, useParams } from 'react-router-dom';
-import HistoryRule, { HrefTo, LinkTo, LinkNav } from '@/router/history';
+import HistoryRule from '@/router/history';
 import { routes } from '@/router/index';
 
 import _ from 'lodash';
@@ -84,7 +84,7 @@ const MenusList: MenuItem[] = [
 // 使用接口代替 PropTypes 进行类型校验
 const NavMenu: React.FC<any> = (props: any, context?: any) => {
 	console.log('NavMenu-props:', props);
-	const { HistoryNav, Location } = HistoryRule();
+	const { HistoryNav, Location, HrefTo } = HistoryRule();
 	// const location = useLocation();
 	const [selKeys, setSelKeys] = useState<string[]>([]);
 	// const [defaultOpenKeys, setDefaultOpenKeys] = useState<string[]>([]);
@@ -96,8 +96,8 @@ const NavMenu: React.FC<any> = (props: any, context?: any) => {
 		console.log('linkTo:', link);
 		// history.replace(link.key);
 		// HistoryNav(link.key, { replace: true });
-    LinkTo(link.key);
-    // HrefTo(link.key)
+		// LinkTo(link.key);
+		HrefTo(link.key);
 	};
 
 	useEffect(() => {

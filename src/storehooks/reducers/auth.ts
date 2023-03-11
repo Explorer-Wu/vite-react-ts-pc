@@ -1,7 +1,7 @@
 import { useReducer, type Dispatch } from 'react';
 import Axios from 'axios';
 import ApisAuth from '@/apis/modules/auth';
-import { LinkTo, HrefTo } from '@/router/history';
+import HistoryRule from '@/router/history';
 // import CookieStorage from '@/utils/storagecookies';
 import { getUserToken, formatToken, setToken, removeToken } from '@/utils/auth';
 import { AuthStateType, AuthActionType, AuthActionOpts, Dispatcher } from './types';
@@ -17,7 +17,7 @@ const authInitState: AuthStateType = {
 };
 
 function initStateFn(initVal): AuthStateType {
-  return { ...initVal };
+	return { ...initVal };
 }
 
 async function fetchDataFn(payload, errorReturn = undefined) {
@@ -83,6 +83,7 @@ function dispatchAuthMiddleware(next: Dispatch<AuthActionOpts>): Dispatcher {
 
 function authReducer(state: AuthStateType, action?: AuthActionOpts): AuthStateType {
 	const { authed, accessToken, refreshKey, expires, userInfo } = action.payload;
+	const { LinkTo, HrefTo } = HistoryRule();
 
 	switch (action.type) {
 		case AuthActionType.AuthCheck:

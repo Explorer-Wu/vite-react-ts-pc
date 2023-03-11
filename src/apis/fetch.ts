@@ -7,17 +7,21 @@ import Axios, {
 import qs from 'qs';
 import { message } from 'antd';
 import React, { useReducer, type Dispatch, type PropsWithChildren } from 'react';
-import { LinkTo, HrefTo } from '@/router/history';
+import HistoryRule from '@/router/history';
 // import CookieStorage from '@/utils/storagecookies';
 import { getUserToken, formatToken, setToken, removeToken } from '@/utils/auth';
 import { StreamPost, StreamGet, convertRes2Blob } from '@/apis/upDownloadFile';
 import { authInitState, authReducer } from '@/storehooks/reducers/auth';
-import type { CustomRequestConfig, CustomAxiosResponse, CustomAxiosError, ReqOptsConfig } from './types';
+import type {
+	CustomRequestConfig,
+	CustomAxiosResponse,
+	CustomAxiosError,
+	ReqOptsConfig,
+} from './types';
 
 // const { getCookie, setCookie, delCookie, getSession, setSession, delSession, clearSession } = CookieStorage;
 
 const [authState, authDispatch] = useReducer(authReducer, authInitState);
-
 
 // const envconf = require('@/envconfig');
 const isProd = ['production', 'testing', 'staging'].includes(process.env.VITE_NODE_ENV as any);
@@ -191,6 +195,7 @@ const doneErrStatusMap = new Map([
 	[
 		401,
 		response => {
+			const { HrefTo } = HistoryRule();
 			if (response.headers.authorization) {
 				// $store.state.auth.authenticated
 				// delSession('user_token');
