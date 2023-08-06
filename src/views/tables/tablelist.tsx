@@ -1,11 +1,11 @@
-import React from "react";
-import { Button } from "antd";
+import React from 'react';
+import { Button } from 'antd';
 // import { RocketOutlined } from "@ant-design/icons";
 // import { $Api } from "@/api";
 // import { ArticleTablesRule } from "@/components/TablePaginations/UseTablePagingRule";
 // import WithTablePagingHOC from "@/components/TablePaginations/WithTablePaging";
 // // import PureTablePaging from "@/components/TablePaginations/PureTablePaging";
-// import PureTable from "@@components/TablePaginations/PureTable";
+// import PureTable from "@/components/TablePaginations/PureTable";
 
 const TableList: React.FC<any> = (props: any, context?: any) => {
 	// const {initPropsData, initStatesVal, getTableDataFn, delArticleFn} = ArticleTablesRule();

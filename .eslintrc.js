@@ -5,6 +5,10 @@ const prettierConfig = require('./prettier.config.js');
 module.exports = {
 	root: true,
 
+	rules: {
+		'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+	},
+
 	env: {
 		node: true,
 		es6: true,
@@ -49,7 +53,8 @@ module.exports = {
 	plugins: [
 		'@typescript-eslint',
 		'prettier',
-		'react',
+		// 'react',
+		'react-refresh',
 		'react-hooks',
 		'jsx-a11y',
 		'jsx-control-statements',
@@ -145,7 +150,7 @@ module.exports = {
 				directory: './tsconfig.json',
 			},
 			node: {
-				extensions: ['.tsx', '.ts', '.js', '.json'],
+				extensions: ['.ts', '.tsx', '.js', '.json'],
 			},
 			alias: [['@', './src']],
 		},

@@ -1,9 +1,22 @@
 {
 	"compilerOptions": {
+		"types": ["node"],
 		"composite": true,
-		"module": "ESNext",
+		"strictNullChecks": true,
+		"module": "NodeNext", // "ESNext",
 		"moduleResolution": "Node",
+		"jsx": "react",
+		"esModuleInterop": true,
 		"allowSyntheticDefaultImports": true
 	},
-	"include": ["vite.config.ts", "vite.base.config.ts", "vite.dev.config.ts", "vite.prod.config.ts"]
+	"include": [
+		"vite.config.ts",
+		"vite.base.config.ts",
+		"vite.dev.config.ts",
+		"vite.prod.config.ts",
+		"jest.config.ts",
+		"cypress.config.ts"
+		// "next-env.d.ts",
+		// "**/*.tsx"
+	]
 }

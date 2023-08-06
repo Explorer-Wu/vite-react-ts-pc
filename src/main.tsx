@@ -26,13 +26,14 @@ import '@/assets/css/app.scss';
 /**
  * 使用 React 18 新API 并发模式写法进行dom render：
  * ReactDOM.createRoot(root).render(jsx) ———— 自动批量更新
- * 
+ *
  * legacy 旧模式: ReactDOM.render(jsx, root)
- */ 
+ */
 
 const Root = createRoot(document.getElementById('root')! as HTMLElement);
-Root.render(
-	<React.StrictMode>
-		<App />
-	</React.StrictMode>,
-);
+Root.render(<App />);
+// Root.render(
+// 	<React.StrictMode>
+// 		<App />
+// 	</React.StrictMode>,
+// );

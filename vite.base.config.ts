@@ -14,58 +14,58 @@ import Inspect from 'vite-plugin-inspect';
 import legacy from '@vitejs/plugin-legacy';
 import basicSsl from '@vitejs/plugin-basic-ssl';
 // * No declaration file for less-vars-to-js
-// import lessToJS from 'less-vars-to-js';
+import lessToJS from 'less-vars-to-js';
 import fs from 'fs';
 import path from 'path';
 
 // const themeVariables = lessToJS(
-//   fs.readFileSync(path.resolve(__dirname, './variables.less'), 'utf8')
+// 	fs.readFileSync(path.resolve(__dirname, './assets/styles/antd-custom.less'), 'utf8'),
 // );
 
 // https://vitejs.dev/config/
 export default defineConfig({
 	// root: path.resolve(__dirname, '../'),
 	base: './',
-  //静态资源服务的文件夹
-  publicDir: "public",
+	//静态资源服务的文件夹
+	publicDir: 'public',
 	// 环境变量设置所在文件夹路径
 	envDir: './env',
-  envPrefix: ['VITE_','APP_'],
-  //静态资源处理
-  assetsInclude: "",
-  //控制台输出的级别 info 、warn、error、silent
-  logLevel: "info",
-  // 设为false 可以避免 vite 清屏而错过在终端中打印某些关键信息
-  clearScreen: false,
+	envPrefix: ['VITE_', 'APP_'],
+	//静态资源处理
+	assetsInclude: '',
+	//控制台输出的级别 info 、warn、error、silent
+	logLevel: 'info',
+	// 设为false 可以避免 vite 清屏而错过在终端中打印某些关键信息
+	clearScreen: false,
 
-  // 强制预构建插件包
-  optimizeDeps: {
-    //检测需要预构建的依赖项
-    // entries: [],
-    //默认情况下，不在 node_modules 中的，链接的包不会预构建
-    // include: ['axios'],
-    include: ['esm-dep > cjs-dep']
-    // exclude:['your-package-name'] //排除在优化之外
-  },
+	// 强制预构建插件包
+	optimizeDeps: {
+		//检测需要预构建的依赖项
+		// entries: [],
+		//默认情况下，不在 node_modules 中的，链接的包不会预构建
+		// include: ['axios'],
+		include: ['esm-dep > cjs-dep'],
+		// exclude:['your-package-name'] //排除在优化之外
+	},
 
 	plugins: [
 		Inspect(),
 		react(), // reactJsx(),
-    basicSsl(),
+		basicSsl(),
 		// reactRefresh(),
 		svgrPlugin(),
-    legacy({
-      targets: [
-        'defaults',
-        'not IE 11',
-        // 'Android > 39',
-        // 'Chrome >= 60',
-        // 'Safari >= 10.1',
-        // 'IOS >= 10.3',
-        // 'Firefox >= 54',
-        // 'Edge >= 15',
-      ],
-    }),
+		legacy({
+			targets: [
+				'defaults',
+				'not IE 11',
+				// 'Android > 39',
+				// 'Chrome >= 60',
+				// 'Safari >= 10.1',
+				// 'IOS >= 10.3',
+				// 'Firefox >= 54',
+				// 'Edge >= 15',
+			],
+		}),
 		vitePluginImp({
 			optimize: true,
 			libList: [
@@ -83,20 +83,22 @@ export default defineConfig({
 			],
 		}),
 	],
-  json: {
-    //是否支持从 .json 文件中进行按名导入
-    namedExports: true,
-    //若设置为 true 导入的json会被转为 export default JSON.parse("..") 会比转译成对象字面量性能更好
-    stringify: true
-  },
+	json: {
+		//是否支持从 .json 文件中进行按名导入
+		namedExports: true,
+		//若设置为 true 导入的json会被转为 export default JSON.parse("..") 会比转译成对象字面量性能更好
+		stringify: true,
+	},
 	css: {
-    // 指定传递给 css 预处理器的选项
+		// 指定传递给 css 预处理器的选项
 		preprocessorOptions: {
 			less: {
 				// 支持内联 JavaScript
 				javascriptEnabled: true, //注意，这一句是在less对象中，写在外边不起作用
-				// modifyVars:{ //在这里进行主题的修改，参考官方配置属性 // modifyVars: themeVariables,
-				//   '@primary-color': '#1DA57A',
+				// modifyVars: {
+				// 	//在这里进行主题的修改，参考官方配置属性
+				// 	modifyVars: themeVariables,
+				//   // '@primary-color': '#1DA57A',
 				// },
 			},
 			sass: { charset: false },
@@ -107,7 +109,7 @@ export default defineConfig({
 					'@import "@/assets/styles/main/normalize.scss";@import "@/assets/styles/main/function.scss";',
 			},
 		},
-    // postCss 配置
+		// postCss 配置
 		postcss: {
 			plugins: [
 				{
@@ -122,13 +124,13 @@ export default defineConfig({
 				},
 			],
 		},
-    // // 配置 css modules 的行为
+		// // 配置 css modules 的行为
 		// modules: {
 		// 	localsConvention: 'camelCase',
 		// },
 	},
 	resolve: {
-    // 导入时想要省略的扩展名列表
+		// 导入时想要省略的扩展名列表
 		extensions: [
 			'.mjs',
 			'.js',
@@ -146,19 +148,19 @@ export default defineConfig({
 			'.svg',
 		], // '.wasm',
 
-    // 配置别名
+		// 配置别名
 		alias: [
-      { find: /^~/, replacement: path.resolve(__dirname, './') },
-      { find: '@', replacement: path.resolve(__dirname, './src') },
-      // { find: /\/#/, replacement: path.resolve(__dirname, './types') }
-    ],
-    // 情景导出 package.json 配置中的exports字段
-    // conditions: [],
+			{ find: /^~/, replacement: path.resolve(__dirname, './') },
+			{ find: '@', replacement: path.resolve(__dirname, './src') },
+			// { find: /\/#/, replacement: path.resolve(__dirname, './types') }
+		],
+		// 情景导出 package.json 配置中的exports字段
+		// conditions: [],
 	},
-  // ssr: {
-  //   // 列出的是要为 SSR 强制外部化的依赖
-  //   external: [],
-  //   //列出的是防止被 SSR 外部化依赖项
-  //   noExternal: []
-  // }
+	// ssr: {
+	//   // 列出的是要为 SSR 强制外部化的依赖
+	//   external: [],
+	//   //列出的是防止被 SSR 外部化依赖项
+	//   noExternal: []
+	// }
 });
